@@ -20,12 +20,14 @@ jobs:
       - name: Random 1
         run: |
           exit $((( RANDOM % 2 )))
+        shell: bash
   job2:
     runs-on: ubuntu-latest
     steps:
       - name: Random 2
         run: |
           exit $((( RANDOM % 2 )))
+        shell: bash
 #   job2:
 #     runs-on: ubuntu-latest
 #     steps:
