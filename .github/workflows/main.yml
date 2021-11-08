@@ -17,7 +17,13 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     steps:
-      - name: Succeed
+      - name: Random 1
+        run: |
+          exit $((( RANDOM % 2 )))
+  job2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Random 2
         run: |
           exit $((( RANDOM % 2 )))
 #   job2:
@@ -29,7 +35,7 @@ jobs:
 
   run-if-failed:
     runs-on: ubuntu-latest
-    needs: [job1]
+    needs: [job1, job2]
     if: always() && failure()
     steps:
       - name: Needs context
