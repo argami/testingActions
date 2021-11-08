@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Succeed
         run: |
-          exit 0
+          exit $((( RANDOM % 2 )))
 #   job2:
 #     runs-on: ubuntu-latest
 #     steps:
@@ -31,6 +31,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: [job1]
     if: always() && failure()
+    steps:
+      - name: Needs context
+        env:
+          NEEDS_CONTEXT: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS_CONTEXT"
+  
+  run-if-succeded:
+    runs-on: ubuntu-latest
+    needs: [job1]
+    if: always() && success()
     steps:
       - name: Needs context
         env:
