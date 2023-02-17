@@ -17,166 +17,21 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
 
 jobs:
-  # job1:
-  #   outputs:
-  #     dashboardUrl: ${{ steps.step1.outputs.dashboardUrl }}
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       node: [8, 10, 12, 14]
-  #   steps:
-  #     - name: Random 1
-  #       id: step1
-  #       run: |
-  #         echo "::set-output name=dashboardUrl::sdllkdsl.com/sdsd/sdsd"
-  #         exit 0
-  #       shell: bash
-  #       env:
-  #         SITE: ${{ matrix.node }}
-  # test:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest]
-  #       node: [8, 10, 12, 14]
-  #   steps:
-  #     - uses: 8398a7/action-slack@v3
-  #       with:
-  #         status: ${{ job.status }}
-  #         fields: job,took
-  #       env:
-  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-  #         MATRIX_CONTEXT: ${{ toJson(matrix) }} # required    #   - uses: 8398a7/action-slack@v3
-  #     with:
-  #       status: ${{ job.status }}
-  #       job_name: test (${{ matrix.os }}, ${{ matrix.node }}) # named without `npm`
-  #       fields: job,took
-  #     env:
-  #       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-
-  # - name: Slack Notification
-  #   uses: tokorom/action-slack-incoming-webhook@main
-  #   env:
-  #     INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  #     GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}
-  #   with:
-  #     text: Hello, Slack!
-  job2:
-    runs-on: ${{ matrix.os }}
-    outputs:
-      step8: ${{ steps.step3.outputs.step8 }}
-      step10: ${{ steps.step3.outputs.step10 }}
-      step12: ${{ steps.step3.outputs.step12 }}
-      step14: ${{ steps.step3.outputs.step14 }}
-      steps8: ${{ steps.step3.outputs.step8 }}
-      steps10: ${{ steps.step3.outputs.step10 }}
-      steps12: ${{ steps.step3.outputs.step12 }}
-      steps14: ${{ steps.step3.outputs.step14 }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [8, 10, 12, 14]
-    steps:
-      - name: Random 1
-        id: step1
-        run: |
-          exit 0
-        shell: bash
-        env:
-          SITE: ${{ matrix.node }}
-
-      - name: Random 2
-        id: step2
-        run: |
-          exit 0 #$((( RANDOM % 2 )))
-        shell: bash
-
-      - name: set header
-        id: step3
-        run: |
-          echo "::set-output name=step$SITE::${{toJSON(needs)}}"
-          echo "::set-output name=steps$SITE::${{steps}}"
-        env:
-          SITE: ${{ matrix.node }}
-
-  final:
+  job1:
     runs-on: ubuntu-latest
-    needs: job2
     steps:
-      - name: Needs context
-        env:
-          NEEDS_CONTEXT: ${{ toJSON(needs) }}
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Generate list using Markdown
         run: |
-          echo "$NEEDS_CONTEXT"
-      - uses: act10ns/slack@v1
-        with:
-          status: ${{ needs.job2.result }}
-          steps: ${{ toJson(steps) }}
-          channel: "#test"
-          config: slack.yml
-    if:
-      always()
+          echo "This is the lead in sentence for the list" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+          echo "- Lets add a bullet point" >> $GITHUB_STEP_SUMMARY
+          echo "- Lets add a second bullet point" >> $GITHUB_STEP_SUMMARY
+          echo "- How about a third one?" >> $GITHUB_STEP_SUMMARY
 
-      # - uses: 8398a7/action-slack@v3
-      #   with:
-      #     status: ${{ job.status }}
-      #     # fields: repo,message,commit,author,action,eventName,ref,workflow,job,took #,pullRequest # selectable (default: repo,message)
-      #     job_name: test (${{ matrix.os }}, ${{ matrix.node }}) # named without `npm`
-      #     fields: job,took
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # required
-      #     MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-      #   if: always()
-
-      # - name: Send custom JSON data to Slack workflow
-      #   id: slack
-      #   uses: slackapi/slack-github-action@v1.18.0
-      #   with:
-      #     # For posting a rich message using Block Kit
-      #     payload: |
-      #       {
-      #         "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
-      #         "blocks": [
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-      #             }
-      #           }
-      #         ]
-      #       }
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-
-  #   job2:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - name: Succeed
-  #         run: |
-  #           echo "ok"
-
-  # run-if-failed:
-  #   runs-on: ubuntu-latest
-  #   needs: [job1, job2]
-  #   if: always() && failure()
-  #   steps:
-  #     - name: Needs context
-  #       env:
-  #         NEEDS_CONTEXT: ${{ toJSON(needs) }}
-  #       run: |
-  #         echo "$NEEDS_CONTEXT"
-
-  # run-if-succeded:
-  #   runs-on: ubuntu-latest
-  #   needs: [job1, job2]
-  #   if: always() && success()
-  #   steps:
-  #     - name: Needs context
-  #       env:
-  #         NEEDS_CONTEXT: ${{ toJSON(needs) }}
-  #       run: |
-  #         echo "$NEEDS_CONTEXT"
-#https://hooks.slack.com/services/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
+      - name: Overwrite Markdown
+        run: |
+          echo "Adding some Markdown content" >> $GITHUB_STEP_SUMMARY
+          echo "There was an error, we need to clear the previous Markdown with some new content." > $GITHUB_STEP_SUMMARY
